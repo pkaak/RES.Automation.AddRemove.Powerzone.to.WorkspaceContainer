@@ -1,0 +1,810 @@
+<?xml version="1.0"?>
+<!-- RES ONE Automation Building Blocks -->
+<!-- Created by demo\administrator on 6/6/2017 10:10:32 PM -->
+<AutomationManager>
+	<buildingblock version="3.0">
+		<projects/>
+		<modules>
+			<module>
+				<properties>
+					<guid>{53848C5C-7C75-43D7-A5D8-615DE4B82405}</guid>
+					<name>Fix missing &lt;workspaces&gt; tag</name>
+					<enabled>yes</enabled>
+					<description>In version v10.0.200 and older there is an error in the buildingblock that pwrtech.exe exports by commandline
+This script fixes the missing &lt;workspaces&gt;-node</description>
+					<version>1.0.3</version>
+					<versioncomment>Updated version</versioncomment>
+					<properties>
+						<separators/>
+					</properties>
+					<folderpath>
+						<folder>
+							<name>RES ONE Workspace</name>
+							<description/>
+							<guid>{94FA3186-F844-4065-9B52-F736CA42095D}</guid>
+							<folder>
+								<name>Workaround for bug</name>
+								<description/>
+								<guid>{146C99D2-C3E8-449F-9960-8CB038353D8A}</guid>
+							</folder>
+						</folder>
+					</folderpath>
+					<deleteusedresources>yes</deleteusedresources>
+				</properties>
+				<tasks>
+					<task hidden="yes">
+						<limitinvoke>no</limitinvoke>
+						<parameters>
+							<param>
+								<name>XMLfile</name>
+								<value1/>
+								<value2/>
+								<value3/>
+								<type>0</type>
+								<description/>
+								<hint>Please provide the necessary input</hint>
+								<selection/>
+								<inputtiming>
+									<importbb showprev="no" eraseprev="no">no</importbb>
+									<schedulejob showprev="yes" eraseprev="no">yes</schedulejob>
+								</inputtiming>
+								<inputoptions>
+									<confirm>no</confirm>
+									<force>no</force>
+									<required>no</required>
+									<validation>no</validation>
+								</inputoptions>
+							</param>
+						</parameters>
+						<conditions>
+							<condition guid="{ED5A69CE-C423-4ED6-B309-C28D8EDB16CD}">
+								<expressions/>
+								<operator>AND</operator>
+								<actiontrue>3</actiontrue>
+								<when>0</when>
+								<action>3</action>
+								<enabled>yes</enabled>
+							</condition>
+						</conditions>
+						<variablescontainer></variablescontainer>
+					</task>
+					<task>
+						<properties>
+							<type>PWRSHELL</type>
+							<guid>{ED5A69CE-C423-4ED6-B309-C28D8EDB16CD}</guid>
+							<description>Execute Windows PowerShell Script</description>
+							<enabled>yes</enabled>
+							<comments>Fix the missing &lt;workspaces&gt;-node</comments>
+							<onerror>fail</onerror>
+						</properties>
+						<settings>
+							<username/>
+							<password encrypted="yes"/>
+							<usescript>yes</usescript>
+							<source>#In version v10.0.0 (and probably before) there is an error in the buildingblock that pwrtech.exe exports by commandline
+#This script fixes the missing &lt;workspaces&gt;-node
+
+$buildingblocklocation  = '$[XMLfile]'
+
+(Get-Content $buildingblocklocation) | 
+    Foreach-Object {
+        
+        $insert = "false"
+        
+        #add &lt;workspaces&gt; before &lt;workspace&gt;
+        if ($_ -match "&lt;workspace&gt;")
+        {
+            "&lt;workspaces&gt;"
+            $_ # send the current line to output
+            $insert = "true"
+        }
+
+
+        #add &lt;/workspaces&gt; after &lt;/workspace&gt;
+        if ($_ -match "&lt;/workspace&gt;") 
+        {
+            #Add Lines after the selected pattern 
+            $_ # send the current line to output
+            "&lt;/workspaces&gt;"
+            $insert = "true"
+        }
+
+        #add current line to output if no insert was done
+        if ($insert -notmatch "true")
+        {
+            $_ # send the current line to output
+        }
+    } | Set-Content $buildingblocklocation</source>
+							<scriptext>ps1</scriptext>
+							<outputwidth>80</outputwidth>
+							<timeout>10</timeout>
+							<terminate>no</terminate>
+							<snapins/>
+							<overrideexecutionpolicy>no</overrideexecutionpolicy>
+							<usex86psonx64>no</usex86psonx64>
+						</settings>
+					</task>
+				</tasks>
+			</module>
+			<module>
+				<properties>
+					<guid>{7385EE00-93BA-436C-AB02-5E02EE34742F}</guid>
+					<name>Add / Remove powerzone from workspace container</name>
+					<enabled>yes</enabled>
+					<description/>
+					<version>1.0.6</version>
+					<versioncomment>Imported via Building Block</versioncomment>
+					<properties>
+						<separators/>
+					</properties>
+					<folderpath>
+						<folder>
+							<name>RES ONE Workspace</name>
+							<description/>
+							<guid>{94FA3186-F844-4065-9B52-F736CA42095D}</guid>
+						</folder>
+					</folderpath>
+					<deleteusedresources>yes</deleteusedresources>
+				</properties>
+				<tasks>
+					<task hidden="yes">
+						<limitinvoke>no</limitinvoke>
+						<parameters identifier="{92CD32B4-8808-4396-A711-9856C8388BEB}">
+							<param>
+								<name>AddRemove</name>
+								<value1>add</value1>
+								<value2>add;remove</value2>
+								<value3>Add;Remove</value3>
+								<type>1</type>
+								<description>Select if you want to Add or Remove a powerzone to the workspace container</description>
+								<hint>Please provide the necessary input</hint>
+								<selection/>
+								<inputtiming>
+									<importbb showprev="no" eraseprev="no">no</importbb>
+									<schedulejob showprev="yes" eraseprev="no">yes</schedulejob>
+								</inputtiming>
+								<inputoptions>
+									<confirm>no</confirm>
+									<force>no</force>
+									<required>yes</required>
+								</inputoptions>
+							</param>
+							<param>
+								<name>PowerzoneGUID</name>
+								<value1/>
+								<value2/>
+								<value3/>
+								<type>0</type>
+								<description>RES ONE Workspace - Powerzone guid to add or remove</description>
+								<hint>Please provide the necessary input</hint>
+								<selection/>
+								<inputtiming>
+									<importbb showprev="no" eraseprev="no">no</importbb>
+									<schedulejob showprev="yes" eraseprev="no">yes</schedulejob>
+								</inputtiming>
+								<inputoptions>
+									<confirm>no</confirm>
+									<force>no</force>
+									<required>no</required>
+									<validation>no</validation>
+								</inputoptions>
+							</param>
+							<param>
+								<name>XMLfile</name>
+								<value1/>
+								<value2/>
+								<value3/>
+								<type>0</type>
+								<description>full path to xml file of the buildingblock</description>
+								<hint>Please provide the necessary input</hint>
+								<selection/>
+								<inputtiming>
+									<importbb showprev="no" eraseprev="no">no</importbb>
+									<schedulejob showprev="yes" eraseprev="no">yes</schedulejob>
+								</inputtiming>
+								<inputoptions>
+									<confirm>no</confirm>
+									<force>no</force>
+									<required>no</required>
+									<validation>no</validation>
+								</inputoptions>
+							</param>
+						</parameters>
+						<conditions>
+							<condition guid="{BA576717-407A-4A46-8AB8-EFFF8D15EBB4}">
+								<expressions/>
+								<operator>AND</operator>
+								<actiontrue>3</actiontrue>
+								<when>0</when>
+								<action>3</action>
+								<enabled>yes</enabled>
+							</condition>
+						</conditions>
+						<variablescontainer></variablescontainer>
+					</task>
+					<task>
+						<properties>
+							<type>PWRSHELL</type>
+							<guid>{BA576717-407A-4A46-8AB8-EFFF8D15EBB4}</guid>
+							<description>Execute Windows PowerShell Script</description>
+							<enabled>yes</enabled>
+							<comments/>
+							<onerror>fail</onerror>
+						</properties>
+						<settings>
+							<username/>
+							<password encrypted="yes"/>
+							<usescript>yes</usescript>
+							<source>#based on ROW buildingblocks version 10.0.0.0
+
+#set parameters
+$buildingblocklocation = '$[XMLfile]'
+$powerzoneguid = '$[PowerzoneGUID]'
+$AddRemove = '$[AddRemove]'
+
+#open buildingblock-xml
+[xml]$ROWbuildingblock=get-content $buildingblocklocation
+
+#set parent-node to the buildingblock-node within the xml
+$parent_xpath = '/respowerfuse/buildingblock'
+$nodes = $ROWbuildingblock.SelectNodes($parent_xpath)
+
+#remove the stuff we do not need as we are just adding or removing existing powerzones
+#remove Powerlaunch node
+    $nodes | % {
+        $child_node = $_.SelectSingleNode('powerlaunch')
+        if ($child_node) {
+            $_.RemoveChild($child_node) | Out-Null
+            }
+        }
+
+#remove Powerzones node
+    $nodes | % {
+        $child_node = $_.SelectSingleNode('powerzones')
+        if ($child_node) {
+            $_.RemoveChild($child_node) | Out-Null
+            }
+
+        }
+
+#add a new powerzone to the workspace container?
+if ($AddRemove -match 'add') {
+    #step 1: set parent to accesscontrol-node and add new access-node
+    $parent_xpath = '/respowerfuse/buildingblock/workspaces/workspace/accesscontrol'
+    $parent = $ROWbuildingblock.SelectNodes($parent_xpath)
+    $access = $ROWbuildingblock.CreateElement('access')
+
+    #step 2: create type-node in new access-node with 'powerzone' as textnode
+    $type = $ROWbuildingblock.CreateElement('type')
+    $typevalue = $ROWbuildingblock.CreateTextNode('powerzone')
+    $type.AppendChild($typevalue) | Out-Null
+    $access.appendchild($type) | Out-Null
+
+    #step 3: create object-node in new access-node with the powerzoneguid as textnode
+    $object = $ROWbuildingblock.CreateElement('object')
+    $objectvalue = $ROWbuildingblock.CreateTextNode($powerzoneguid)
+    $object.AppendChild($objectvalue) | Out-Null
+    $access.appendchild($object) | Out-Null
+
+    #step 4: append the new access-node to the accesscontrol-node
+    $parent.appendchild($access) | Out-Null
+
+    #check if the workspace container is enabled, if not, enable it
+    if ($ROWbuildingblock.respowerfuse.buildingblock.workspaces.workspace.enabled -notmatch 'yes') {
+        $ROWbuildingblock.respowerfuse.buildingblock.workspaces.workspace.enabled = 'yes'
+    }
+
+}
+
+#remove powerzone from workspace container?
+if ($AddRemove -match 'remove') {
+    
+    #search powerzoneguid in all the workspace container access nodes
+    ForEach($access in $ROWbuildingblock.respowerfuse.buildingblock.workspaces.workspace.accesscontrol)
+    {
+        #select Node when right powerzoneguid is found
+        $AccessObject = $access.SelectSingleNode("//object[.='$powerzoneguid']")
+    
+        if($AccessObject.'#text' -eq $powerzoneguid) {
+            #remove the selected access-childnode from the accesscontrol
+            #the objectnode has the accessnode as parent, which needs to be removed from his parent accesscontrol
+            $AccessObject.ParentNode.ParentNode.RemoveChild($AccessObject.ParentNode)
+            
+        }
+    }
+    
+    #check if there are any powerzones left, else disable the workspace container
+    $CounterPowerzones=0
+    
+    #search for powerzones in the accesscontrol-node and count up when found
+    for ($count=0; $count -lt $access.access.count; $count++) {
+        if ($access.access[$count].type -match 'powerzone') {
+            $CounterPowerzones++
+        }
+    }
+    if ($CounterPowerzones -match 0) {
+        $ROWbuildingblock.respowerfuse.buildingblock.workspaces.workspace.enabled = 'no'
+    }
+}
+
+#and save everything back to disk
+$ROWbuildingblock.Save($buildingblocklocation)</source>
+							<scriptext>ps1</scriptext>
+							<outputwidth>80</outputwidth>
+							<timeout>10</timeout>
+							<terminate>no</terminate>
+							<snapins/>
+							<overrideexecutionpolicy>no</overrideexecutionpolicy>
+							<usex86psonx64>no</usex86psonx64>
+						</settings>
+					</task>
+				</tasks>
+			</module>
+			<module>
+				<properties>
+					<guid>{2AAD1336-5897-4CF9-BE07-9F22A2B71648}</guid>
+					<name>Export buildingblock from ROW</name>
+					<enabled>yes</enabled>
+					<description/>
+					<version>1.0.5</version>
+					<versioncomment>Updated version</versioncomment>
+					<properties>
+						<separators/>
+					</properties>
+					<folderpath>
+						<folder>
+							<name>RES ONE Workspace</name>
+							<description/>
+							<guid>{94FA3186-F844-4065-9B52-F736CA42095D}</guid>
+						</folder>
+					</folderpath>
+					<deleteusedresources>yes</deleteusedresources>
+				</properties>
+				<tasks>
+					<task hidden="yes">
+						<limitinvoke>no</limitinvoke>
+						<parameters>
+							<param>
+								<name>XMLfile</name>
+								<value1/>
+								<value2/>
+								<value3/>
+								<type>0</type>
+								<description>full path to xml file of the buildingblock</description>
+								<hint>Please provide the necessary input</hint>
+								<selection/>
+								<inputtiming>
+									<importbb showprev="no" eraseprev="no">no</importbb>
+									<schedulejob showprev="yes" eraseprev="no">yes</schedulejob>
+								</inputtiming>
+								<inputoptions>
+									<confirm>no</confirm>
+									<force>no</force>
+									<required>no</required>
+									<validation>no</validation>
+								</inputoptions>
+							</param>
+							<param>
+								<name>ObjectGUID</name>
+								<value1/>
+								<value2/>
+								<value3/>
+								<type>0</type>
+								<description>ROW GUID of the item to export</description>
+								<hint>Please provide the necessary input</hint>
+								<selection/>
+								<inputtiming>
+									<importbb showprev="no" eraseprev="no">no</importbb>
+									<schedulejob showprev="yes" eraseprev="no">yes</schedulejob>
+								</inputtiming>
+								<inputoptions>
+									<confirm>no</confirm>
+									<force>no</force>
+									<required>no</required>
+									<validation>no</validation>
+								</inputoptions>
+							</param>
+						</parameters>
+						<conditions>
+							<condition guid="{7A17134B-0398-4CD5-9105-7024088E7457}">
+								<expressions/>
+								<operator>AND</operator>
+								<actiontrue>3</actiontrue>
+								<when>0</when>
+								<action>3</action>
+								<enabled>yes</enabled>
+							</condition>
+						</conditions>
+						<variablescontainer><categories><category><guid>{D2278C70-B6AE-42BE-B4AA-22086388ADDC}</guid><name>ROA ServiceAccount</name></category></categories><variables><variable><guid>{2799C228-F76C-46E0-B4B6-AC3CC8B4F116}</guid><name>ROA ServiceAccount for ROW console</name><description/><type>2</type><parentguid>{D2278C70-B6AE-42BE-B4AA-22086388ADDC}</parentguid><details><value1>demo\svc-roa</value1><value2></value2></details></variable></variables></variablescontainer>
+					</task>
+					<task>
+						<properties>
+							<type>COMMAND</type>
+							<guid>{7A17134B-0398-4CD5-9105-7024088E7457}</guid>
+							<description>Execute "@[SCRIPT]"</description>
+							<enabled>yes</enabled>
+							<comments>Export buildingblock from ROW</comments>
+							<onerror>fail</onerror>
+						</properties>
+						<settings>
+							<commandline>@[SCRIPT]</commandline>
+							<username>^[ROA ServiceAccount for ROW console]</username>
+							<password encrypted="yes"/>
+							<loaduserprofile>yes</loaduserprofile>
+							<usecmd>yes</usecmd>
+							<redirect>no</redirect>
+							<failonerroutput>no</failonerroutput>
+							<validateexitcode>no</validateexitcode>
+							<validateexitcode>no</validateexitcode>
+							<failifexitcode>no</failifexitcode>
+							<exitcodes>0</exitcodes>
+							<timeout>10</timeout>
+							<terminate>no</terminate>
+							<terminatetree>no</terminatetree>
+							<grablogfile/>
+							<script>"%respfdir%\pwrtech.exe" /export "$[XMLfile]" /guid=$[ObjectGUID]</script>
+							<scriptext>cmd</scriptext>
+						</settings>
+					</task>
+				</tasks>
+			</module>
+			<module>
+				<properties>
+					<guid>{DF907BD1-D07B-40C6-AC7E-8FFF5E396259}</guid>
+					<name>Import buildingblock to ROW</name>
+					<enabled>yes</enabled>
+					<description/>
+					<version>1.0.6</version>
+					<versioncomment>Updated version</versioncomment>
+					<properties>
+						<separators/>
+					</properties>
+					<folderpath>
+						<folder>
+							<name>RES ONE Workspace</name>
+							<description/>
+							<guid>{94FA3186-F844-4065-9B52-F736CA42095D}</guid>
+						</folder>
+					</folderpath>
+					<deleteusedresources>yes</deleteusedresources>
+				</properties>
+				<tasks>
+					<task hidden="yes">
+						<limitinvoke>no</limitinvoke>
+						<parameters>
+							<param>
+								<name>XMLfile</name>
+								<value1/>
+								<value2/>
+								<value3/>
+								<type>0</type>
+								<description>full path to xml file of the buildingblock</description>
+								<hint>Please provide the necessary input</hint>
+								<selection/>
+								<inputtiming>
+									<importbb showprev="no" eraseprev="no">no</importbb>
+									<schedulejob showprev="yes" eraseprev="no">yes</schedulejob>
+								</inputtiming>
+								<inputoptions>
+									<confirm>no</confirm>
+									<force>no</force>
+									<required>no</required>
+									<validation>no</validation>
+								</inputoptions>
+							</param>
+						</parameters>
+						<conditions>
+							<condition guid="{9DAF7AD9-878E-46DA-A270-DCB92B191259}">
+								<expressions/>
+								<operator>AND</operator>
+								<actiontrue>3</actiontrue>
+								<when>0</when>
+								<action>3</action>
+								<enabled>yes</enabled>
+							</condition>
+						</conditions>
+						<variablescontainer><categories><category><guid>{D2278C70-B6AE-42BE-B4AA-22086388ADDC}</guid><name>ROA ServiceAccount</name></category></categories><variables><variable><guid>{2799C228-F76C-46E0-B4B6-AC3CC8B4F116}</guid><name>ROA ServiceAccount for ROW console</name><description/><type>2</type><parentguid>{D2278C70-B6AE-42BE-B4AA-22086388ADDC}</parentguid><details><value1>demo\svc-roa</value1><value2></value2></details></variable></variables></variablescontainer>
+					</task>
+					<task>
+						<properties>
+							<type>COMMAND</type>
+							<guid>{9DAF7AD9-878E-46DA-A270-DCB92B191259}</guid>
+							<description>Execute "@[SCRIPT]"</description>
+							<enabled>yes</enabled>
+							<comments>Add buildingblock to ROW</comments>
+							<onerror>fail</onerror>
+						</properties>
+						<settings>
+							<commandline>@[SCRIPT]</commandline>
+							<username>^[ROA ServiceAccount for ROW console]</username>
+							<password encrypted="yes"/>
+							<loaduserprofile>yes</loaduserprofile>
+							<usecmd>yes</usecmd>
+							<redirect>no</redirect>
+							<failonerroutput>no</failonerroutput>
+							<validateexitcode>no</validateexitcode>
+							<validateexitcode>no</validateexitcode>
+							<failifexitcode>no</failifexitcode>
+							<exitcodes>0</exitcodes>
+							<timeout>10</timeout>
+							<terminate>no</terminate>
+							<terminatetree>no</terminatetree>
+							<grablogfile/>
+							<script>"%respfdir%\pwrtech.exe" /add "$[XMLfile]"</script>
+							<scriptext>cmd</scriptext>
+						</settings>
+					</task>
+				</tasks>
+			</module>
+		</modules>
+		<resources/>
+		<runbooks>
+			<runbook>
+				<properties>
+					<guid>{D2DBAC84-DCC4-4DB1-A358-7D60B1D35776}</guid>
+					<name>Add / Remove Powerzone to Workspace Container</name>
+					<enabled>yes</enabled>
+					<description/>
+					<version>1.0.11</version>
+					<versioncomment>Updated version</versioncomment>
+					<properties>
+						<parameters>
+							<param ref="module" guid="{7385EE00-93BA-436C-AB02-5E02EE34742F}" name="Add / Remove powerzone from workspace container" linked="no">
+								<name>AddRemove</name>
+								<value1>add</value1>
+								<value2>add;remove</value2>
+								<value3>Add;Remove</value3>
+								<type>1</type>
+								<description>Select if you want to Add or Remove a powerzone to the workspace container</description>
+								<hint>Please provide the necessary input</hint>
+								<inputtiming>
+									<importbb showprev="no" eraseprev="no">no</importbb>
+									<schedulejob showprev="yes" eraseprev="no">yes</schedulejob>
+								</inputtiming>
+								<inputoptions>
+									<confirm>no</confirm>
+									<force>no</force>
+									<required>yes</required>
+								</inputoptions>
+								<selection>
+									<module guid="{7385EE00-93BA-436C-AB02-5E02EE34742F}" type="module">
+										<param>AddRemove</param>
+									</module>
+								</selection>
+							</param>
+							<param ref="module" guid="{7385EE00-93BA-436C-AB02-5E02EE34742F}" name="Add / Remove powerzone from workspace container" linked="no">
+								<name>PowerzoneGUID</name>
+								<value1/>
+								<value2/>
+								<value3/>
+								<type>0</type>
+								<description>RES ONE Workspace - Powerzone guid to add or remove</description>
+								<hint>Please provide the necessary input</hint>
+								<inputtiming>
+									<importbb showprev="no" eraseprev="no">no</importbb>
+									<schedulejob showprev="yes" eraseprev="no">yes</schedulejob>
+								</inputtiming>
+								<inputoptions>
+									<confirm>no</confirm>
+									<force>no</force>
+									<required>no</required>
+									<validation>no</validation>
+								</inputoptions>
+								<selection>
+									<module guid="{7385EE00-93BA-436C-AB02-5E02EE34742F}" type="module">
+										<param>PowerzoneGUID</param>
+									</module>
+								</selection>
+							</param>
+							<param>
+								<name>XMLfile</name>
+								<value1>$[TempEdit Location]$[BuildingBlock Name]</value1>
+								<value2/>
+								<value3/>
+								<type>0</type>
+								<description>full path to xml file of the buildingblock</description>
+								<hint>Please provide the necessary input</hint>
+								<selection>
+									<module type="module" guid="{2AAD1336-5897-4CF9-BE07-9F22A2B71648}" linktype="0">
+										<param>XMLfile</param>
+									</module>
+									<module type="module" guid="{7385EE00-93BA-436C-AB02-5E02EE34742F}" linktype="0">
+										<param>XMLfile</param>
+									</module>
+									<module guid="{DF907BD1-D07B-40C6-AC7E-8FFF5E396259}" type="module">
+										<param>XMLfile</param>
+									</module>
+									<module guid="{53848C5C-7C75-43D7-A5D8-615DE4B82405}" type="module">
+										<param>XMLfile</param>
+									</module>
+								</selection>
+								<inputtiming>
+									<importbb showprev="no" eraseprev="no">no</importbb>
+									<schedulejob showprev="no" eraseprev="no">no</schedulejob>
+								</inputtiming>
+								<inputoptions>
+									<confirm>no</confirm>
+									<force>no</force>
+									<required>no</required>
+									<validation>no</validation>
+								</inputoptions>
+							</param>
+							<param>
+								<name>ObjectGUID</name>
+								<value1/>
+								<value2/>
+								<value3/>
+								<type>0</type>
+								<description>ROW GUID of the item to export</description>
+								<hint>Please provide the necessary input</hint>
+								<selection>
+									<module type="module" guid="{2AAD1336-5897-4CF9-BE07-9F22A2B71648}" linktype="0">
+										<param>ObjectGUID</param>
+									</module>
+								</selection>
+								<inputtiming>
+									<importbb showprev="no" eraseprev="no">no</importbb>
+									<schedulejob showprev="yes" eraseprev="no">yes</schedulejob>
+								</inputtiming>
+								<inputoptions>
+									<confirm>no</confirm>
+									<force>no</force>
+									<required>no</required>
+									<validation>no</validation>
+								</inputoptions>
+							</param>
+							<param>
+								<name>TempEdit Location</name>
+								<value1>C:\Temp\</value1>
+								<value2/>
+								<value3/>
+								<type>0</type>
+								<description>Location where files can be stored temporary.
+End with a \
+For example c:\Temp\
+(please make sure that this directory exists and the ROA agent has read/write access.</description>
+								<hint>Please provide the necessary input</hint>
+								<selection/>
+								<inputtiming>
+									<importbb showprev="no" eraseprev="no">no</importbb>
+									<schedulejob showprev="yes" eraseprev="no">yes</schedulejob>
+								</inputtiming>
+								<inputoptions>
+									<confirm>no</confirm>
+									<force>yes</force>
+									<required>no</required>
+									<validation>no</validation>
+								</inputoptions>
+							</param>
+							<param>
+								<name>BuildingBlock Name</name>
+								<value1>@[REPLACE(@[REPLACE($[ObjectGUID],{,)],},)].xml</value1>
+								<value2/>
+								<value3/>
+								<type>0</type>
+								<description/>
+								<hint>Please provide the necessary input</hint>
+								<selection/>
+								<inputtiming>
+									<importbb showprev="no" eraseprev="no">no</importbb>
+									<schedulejob showprev="no" eraseprev="no">no</schedulejob>
+								</inputtiming>
+								<inputoptions>
+									<confirm>no</confirm>
+									<force>no</force>
+									<required>no</required>
+									<validation>no</validation>
+								</inputoptions>
+							</param>
+						</parameters>
+						<jobs>
+							<job>
+								<guid>{F763DB16-6F6B-4754-9525-6A9890CAF2E8}</guid>
+								<properties>
+									<enabled>yes</enabled>
+									<name>Export buildingblock from ROW</name>
+									<timeout>0</timeout>
+									<offlineagentsnextboot>no</offlineagentsnextboot>
+									<wol>no</wol>
+									<selectoneagent>yes</selectoneagent>
+									<what type="module">{2AAD1336-5897-4CF9-BE07-9F22A2B71648}</what>
+									<whatname>Export buildingblock from ROW</whatname>
+									<who type="team">{52D3569E-D507-42CF-8563-BFD0F0E6E623}</who>
+									<use_runbookparam>no</use_runbookparam>
+									<whoname>RES ONE Workspace Console</whoname>
+									<onerror>fail</onerror>
+								</properties>
+							</job>
+							<job>
+								<guid>{2453CAE8-2CA3-44EC-9A2A-6BB2DE6936E9}</guid>
+								<properties>
+									<enabled>no</enabled>
+									<name>Fix missing &lt;workspaces&gt; tag</name>
+									<timeout>0</timeout>
+									<offlineagentsnextboot>no</offlineagentsnextboot>
+									<wol>no</wol>
+									<selectoneagent>yes</selectoneagent>
+									<what type="module">{53848C5C-7C75-43D7-A5D8-615DE4B82405}</what>
+									<whatname>Fix missing &lt;workspaces&gt; tag</whatname>
+									<who type="team">{52D3569E-D507-42CF-8563-BFD0F0E6E623}</who>
+									<use_runbookparam>no</use_runbookparam>
+									<whoname>RES ONE Workspace Console</whoname>
+									<onerror>fail</onerror>
+								</properties>
+							</job>
+							<job>
+								<guid>{54F1EFBE-E07F-4C61-A335-58484BCE575D}</guid>
+								<properties>
+									<enabled>yes</enabled>
+									<name>Add / Remove powerzone from workspace container</name>
+									<timeout>0</timeout>
+									<offlineagentsnextboot>no</offlineagentsnextboot>
+									<wol>no</wol>
+									<selectoneagent>yes</selectoneagent>
+									<what type="module">{7385EE00-93BA-436C-AB02-5E02EE34742F}</what>
+									<whatname>Add / Remove powerzone from workspace container</whatname>
+									<who type="team">{52D3569E-D507-42CF-8563-BFD0F0E6E623}</who>
+									<use_runbookparam>no</use_runbookparam>
+									<whoname>RES ONE Workspace Console</whoname>
+									<onerror>fail</onerror>
+								</properties>
+							</job>
+							<job>
+								<guid>{63F2B230-D261-4D93-8368-6AE0F18D49E0}</guid>
+								<properties>
+									<enabled>yes</enabled>
+									<name>Import buildingblock to ROW</name>
+									<timeout>0</timeout>
+									<offlineagentsnextboot>no</offlineagentsnextboot>
+									<wol>no</wol>
+									<selectoneagent>yes</selectoneagent>
+									<what type="module">{DF907BD1-D07B-40C6-AC7E-8FFF5E396259}</what>
+									<whatname>Import buildingblock to ROW</whatname>
+									<who type="team">{52D3569E-D507-42CF-8563-BFD0F0E6E623}</who>
+									<use_runbookparam>no</use_runbookparam>
+									<whoname>RES ONE Workspace Console</whoname>
+									<onerror>fail</onerror>
+								</properties>
+							</job>
+						</jobs>
+						<separators/>
+						<limitinvoke>no</limitinvoke>
+					</properties>
+					<folderpath>
+						<folder>
+							<name>RES ONE Workspace</name>
+							<description/>
+							<guid>{DB64CA1E-5FE5-4C3C-A710-4901B683A76C}</guid>
+						</folder>
+					</folderpath>
+				</properties>
+			</runbook>
+		</runbooks>
+		<teams/>
+		<projectfolders/>
+		<modulefolders>
+			<folder>
+				<guid>{94FA3186-F844-4065-9B52-F736CA42095D}</guid>
+				<name>RES ONE Workspace</name>
+				<description/>
+				<parent/>
+			</folder>
+			<folder>
+				<guid>{146C99D2-C3E8-449F-9960-8CB038353D8A}</guid>
+				<name>Workaround for bug</name>
+				<description/>
+				<parent>{94FA3186-F844-4065-9B52-F736CA42095D}</parent>
+			</folder>
+		</modulefolders>
+		<resourcefolders/>
+		<runbookfolders>
+			<folder>
+				<guid>{DB64CA1E-5FE5-4C3C-A710-4901B683A76C}</guid>
+				<name>RES ONE Workspace</name>
+				<description/>
+				<parent/>
+			</folder>
+		</runbookfolders>
+		<teamfolders/>
+	</buildingblock>
+</AutomationManager>
